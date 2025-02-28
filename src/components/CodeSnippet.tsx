@@ -60,17 +60,12 @@ const CodeSnippet: React.FC<CodeSnippetProps> = ({ code, currentPosition, typedC
               })}
               {/* Add a line break if this isn't the last line */}
               {lineIndex < codeLines.length - 1 && (
-                <span className={
-                  absoluteIndex => {
-                    const newLineIndex = codeLines.slice(0, lineIndex + 1).join('\n').length;
-                    if (newLineIndex < currentPosition) {
-                      return 'character character-correct';
-                    } else if (newLineIndex === currentPosition) {
-                      return 'character character-current';
-                    }
-                    return 'character character-pending';
-                  }
-                }>{'\n'}</span>
+                <span className={getNewLineClass(
+                  codeLines.slice(0, lineIndex + 1).join('\n').length,
+                  currentPosition
+                )}>
+                  {'\n'}
+                </span>
               )}
             </div>
           );
@@ -79,5 +74,15 @@ const CodeSnippet: React.FC<CodeSnippetProps> = ({ code, currentPosition, typedC
     </div>
   );
 };
+
+// Helper function to determine class for newline characters
+function getNewLineClass(newLineIndex: number, currentPosition: number): string {
+  if (newLineIndex < currentPosition) {
+    return 'character character-correct';
+  } else if (newLineIndex === currentPosition) {
+    return 'character character-current';
+  }
+  return 'character character-pending';
+}
 
 export default CodeSnippet;
