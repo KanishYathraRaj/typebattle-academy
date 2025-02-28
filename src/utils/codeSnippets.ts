@@ -274,6 +274,242 @@ function merge(left, right) {
   return dp[n][capacity];
 }`,
     description: 'A problem in combinatorial optimization to find the most valuable combination of items that fit in a knapsack.',
+  },
+  // Adding Python snippets
+  {
+    id: 'binary-search-python',
+    algorithm: 'Binary Search',
+    language: 'Python',
+    code: `def binary_search(arr, target):
+    left = 0
+    right = len(arr) - 1
+    
+    while left <= right:
+        mid = left + (right - left) // 2
+        
+        if arr[mid] == target:
+            return mid
+        
+        if arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    
+    return -1  # Target not found`,
+    description: 'Efficiently finds an item in a sorted array by repeatedly dividing the search space in half.',
+  },
+  {
+    id: 'merge-sort-python',
+    algorithm: 'Merge Sort',
+    language: 'Python',
+    code: `def merge_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    
+    mid = len(arr) // 2
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+    
+    return merge(left, right)
+
+def merge(left, right):
+    result = []
+    left_idx, right_idx = 0, 0
+    
+    while left_idx < len(left) and right_idx < len(right):
+        if left[left_idx] < right[right_idx]:
+            result.append(left[left_idx])
+            left_idx += 1
+        else:
+            result.append(right[right_idx])
+            right_idx += 1
+    
+    result.extend(left[left_idx:])
+    result.extend(right[right_idx:])
+    return result`,
+    description: 'A divide-and-conquer algorithm that divides the array, sorts the subarrays, and merges them back.',
+  },
+  {
+    id: 'quick-sort-python',
+    algorithm: 'Quick Sort',
+    language: 'Python',
+    code: `def quick_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    
+    return quick_sort(left) + middle + quick_sort(right)`,
+    description: 'A fast, divide-and-conquer algorithm that partitions array and recursively sorts partitions.',
+  },
+  // Adding Java snippets
+  {
+    id: 'binary-search-java',
+    algorithm: 'Binary Search',
+    language: 'Java',
+    code: `public static int binarySearch(int[] arr, int target) {
+    int left = 0;
+    int right = arr.length - 1;
+    
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        
+        if (arr[mid] == target) {
+            return mid;
+        }
+        
+        if (arr[mid] < target) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+    
+    return -1; // Target not found
+}`,
+    description: 'Efficiently finds an item in a sorted array by repeatedly dividing the search space in half.',
+  },
+  {
+    id: 'merge-sort-java',
+    algorithm: 'Merge Sort',
+    language: 'Java',
+    code: `public static void mergeSort(int[] arr, int left, int right) {
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+        
+        mergeSort(arr, left, mid);
+        mergeSort(arr, mid + 1, right);
+        
+        merge(arr, left, mid, right);
+    }
+}
+
+public static void merge(int[] arr, int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+    
+    int[] L = new int[n1];
+    int[] R = new int[n2];
+    
+    for (int i = 0; i < n1; i++) {
+        L[i] = arr[left + i];
+    }
+    for (int j = 0; j < n2; j++) {
+        R[j] = arr[mid + 1 + j];
+    }
+    
+    int i = 0, j = 0;
+    int k = left;
+    
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) {
+            arr[k] = L[i];
+            i++;
+        } else {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+    
+    while (i < n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+    
+    while (j < n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+}`,
+    description: 'A divide-and-conquer algorithm that divides the array, sorts the subarrays, and merges them back.',
+  },
+  // Adding C++ snippets
+  {
+    id: 'binary-search-cpp',
+    algorithm: 'Binary Search',
+    language: 'C++',
+    code: `int binarySearch(vector<int>& arr, int target) {
+    int left = 0;
+    int right = arr.size() - 1;
+    
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        
+        if (arr[mid] == target) {
+            return mid;
+        }
+        
+        if (arr[mid] < target) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+    
+    return -1; // Target not found
+}`,
+    description: 'Efficiently finds an item in a sorted array by repeatedly dividing the search space in half.',
+  },
+  {
+    id: 'merge-sort-cpp',
+    algorithm: 'Merge Sort',
+    language: 'C++',
+    code: `void merge(vector<int>& arr, int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+    
+    vector<int> L(n1), R(n2);
+    
+    for (int i = 0; i < n1; i++) {
+        L[i] = arr[left + i];
+    }
+    for (int j = 0; j < n2; j++) {
+        R[j] = arr[mid + 1 + j];
+    }
+    
+    int i = 0, j = 0, k = left;
+    
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) {
+            arr[k] = L[i];
+            i++;
+        } else {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+    
+    while (i < n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+    
+    while (j < n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+}
+
+void mergeSort(vector<int>& arr, int left, int right) {
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+        
+        mergeSort(arr, left, mid);
+        mergeSort(arr, mid + 1, right);
+        
+        merge(arr, left, mid, right);
+    }
+}`,
+    description: 'A divide-and-conquer algorithm that divides the array, sorts the subarrays, and merges them back.',
   }
 ];
 
