@@ -10,7 +10,7 @@ interface CodeSnippetProps {
 const CodeSnippet: React.FC<CodeSnippetProps> = ({ code, currentPosition, typedChars }) => {
   return (
     <div className="w-full rounded-lg bg-card p-6 border border-border/50 overflow-x-auto">
-      <pre className="font-mono text-base leading-relaxed whitespace-pre-wrap">
+      <pre className="font-mono text-base leading-relaxed whitespace-pre">
         {code.split('').map((char, index) => {
           let characterClass = 'character character-pending';
           
@@ -21,6 +21,15 @@ const CodeSnippet: React.FC<CodeSnippetProps> = ({ code, currentPosition, typedC
                 : 'character character-incorrect';
           } else if (index === currentPosition) {
             characterClass = 'character character-current';
+          }
+
+          // Preserve line breaks and spaces in the rendered output
+          if (char === ' ') {
+            return <span key={index} className={characterClass}>&nbsp;</span>;
+          } else if (char === '\n') {
+            return <React.Fragment key={index}>
+              <span className={characterClass}>{'\n'}</span>
+            </React.Fragment>;
           }
           
           return (

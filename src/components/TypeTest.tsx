@@ -63,6 +63,36 @@ const TypeTest: React.FC = () => {
     }
   }, [isTestActive]);
   
+  // Complete test function
+  const completeTest = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    
+    setIsComplete(true);
+    
+    // Calculate final stats
+    const finalElapsed = Math.floor((Date.now() - (startTime || 0)) / 1000);
+    const finalWpm = calculateWPM(currentSnippet.code.length, finalElapsed);
+    
+    // Submit results
+    endTest({
+      wpm: finalWpm,
+      accuracy,
+      time: finalElapsed,
+      errors: errorCount,
+      snippetId: currentSnippet.id,
+      algorithm: currentSnippet.algorithm,
+      language: currentSnippet.language,
+      date: new Date()
+    });
+    
+    toast({
+      title: 'Test Complete!',
+      description: `You typed at ${finalWpm} WPM with ${accuracy}% accuracy.`,
+    });
+  }, [accuracy, currentSnippet, endTest, errorCount, startTime, toast]);
+  
   // Keyboard event handler
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (!isTestActive || isComplete) return;
@@ -117,7 +147,7 @@ const TypeTest: React.FC = () => {
       
       // Update typed characters array
       const newTypedChars = [...typedChars];
-      newTypedChars.splice(newPos, 1);
+      newTypedChars.pop();
       setTypedChars(newTypedChars);
       
       // Recalculate accuracy
@@ -133,36 +163,6 @@ const TypeTest: React.FC = () => {
       e.preventDefault();
     }
   }, [isTestActive, isComplete, currentPos, startTime, typedChars, currentSnippet, completeTest]);
-  
-  // Complete test function
-  function completeTest() {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-    }
-    
-    setIsComplete(true);
-    
-    // Calculate final stats
-    const finalElapsed = Math.floor((Date.now() - (startTime || 0)) / 1000);
-    const finalWpm = calculateWPM(currentSnippet.code.length, finalElapsed);
-    
-    // Submit results
-    endTest({
-      wpm: finalWpm,
-      accuracy,
-      time: finalElapsed,
-      errors: errorCount,
-      snippetId: currentSnippet.id,
-      algorithm: currentSnippet.algorithm,
-      language: currentSnippet.language,
-      date: new Date()
-    });
-    
-    toast({
-      title: 'Test Complete!',
-      description: `You typed at ${finalWpm} WPM with ${accuracy}% accuracy.`,
-    });
-  }
   
   // Reset the test
   const handleReset = () => {
