@@ -36,16 +36,18 @@ const CodeSnippet: React.FC<CodeSnippetProps> = ({ code, currentPosition, typedC
                   ? charIndex 
                   : codeLines.slice(0, lineIndex).join('\n').length + 1 + charIndex;
                 
-                let characterClass = 'character character-pending';
+                let characterClass = '';
                 
                 if (absoluteIndex < currentPosition) {
                   characterClass = 
                     typedChars[absoluteIndex] === char 
                       ? 'character character-correct' 
                       : 'character character-incorrect';
-                } else if (absoluteIndex === currentPosition - 1) {
-                  // Highlight current character (cursor is one character behind)
+                } else if (absoluteIndex === currentPosition) {
+                  // Position the cursor at the current character
                   characterClass = 'character character-current';
+                } else {
+                  characterClass = 'character character-pending';
                 }
                 
                 // Preserve spaces in the rendered output
@@ -80,8 +82,8 @@ const CodeSnippet: React.FC<CodeSnippetProps> = ({ code, currentPosition, typedC
 function getNewLineClass(newLineIndex: number, currentPosition: number): string {
   if (newLineIndex < currentPosition) {
     return 'character character-correct';
-  } else if (newLineIndex === currentPosition - 1) {
-    // Adjust cursor position for newline characters as well
+  } else if (newLineIndex === currentPosition) {
+    // Adjust cursor position for newline characters
     return 'character character-current';
   }
   return 'character character-pending';
