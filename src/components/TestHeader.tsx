@@ -1,7 +1,5 @@
 
 import React from 'react';
-import { Button } from './ui/button';
-import { Play } from 'lucide-react';
 import { useTest } from '../context/TestContext';
 import StatisticsPanel from './StatisticsPanel';
 
@@ -22,7 +20,7 @@ const TestHeader: React.FC<TestHeaderProps> = ({
   time, 
   errorCount 
 }) => {
-  const { currentSnippet, startTest } = useTest();
+  const { currentSnippet } = useTest();
 
   return (
     <div className="mb-6">
@@ -35,17 +33,6 @@ const TestHeader: React.FC<TestHeaderProps> = ({
           {currentSnippet.description}
         </span>
       </div>
-      
-      {!isTestActive && !isComplete && (
-        <Button 
-          onClick={startTest} 
-          size="lg" 
-          className="mb-6 transition-all duration-300 hover:scale-105"
-        >
-          <Play className="mr-2 h-4 w-4" />
-          Start Typing
-        </Button>
-      )}
       
       {(isTestActive || isComplete) && (
         <StatisticsPanel 
