@@ -107,7 +107,7 @@
   }
   
   .character {
-    @apply relative inline-block transition-colors duration-75;
+    @apply relative inline-block transition-all duration-75;
   }
   
   .character-current {
@@ -118,18 +118,22 @@
     @apply content-[''] absolute w-0.5 h-5 bg-primary opacity-100 animate-caret-blink;
     right: -1px;
     bottom: 0;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
   }
   
   .character-correct {
-    @apply text-primary;
+    @apply text-primary transition-all;
   }
   
   .character-incorrect {
-    @apply text-destructive;
+    @apply text-destructive transition-all;
+    text-decoration: underline;
+    text-decoration-color: theme('colors.destructive');
+    text-decoration-thickness: 2px;
   }
   
   .character-pending {
-    @apply text-muted-foreground;
+    @apply text-muted-foreground transition-all;
   }
   
   .test-container {

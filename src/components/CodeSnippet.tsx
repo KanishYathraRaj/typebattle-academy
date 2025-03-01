@@ -44,7 +44,7 @@ const CodeSnippet: React.FC<CodeSnippetProps> = ({ code, currentPosition, typedC
                       ? 'character character-correct' 
                       : 'character character-incorrect';
                 } else if (absoluteIndex === currentPosition - 1) {
-                  // Move the cursor one character behind the current position
+                  // Highlight current character (cursor is one character behind)
                   characterClass = 'character character-current';
                 }
                 
