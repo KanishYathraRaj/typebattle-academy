@@ -43,8 +43,8 @@ const CodeSnippet: React.FC<CodeSnippetProps> = ({ code, currentPosition, typedC
                     typedChars[absoluteIndex] === char 
                       ? 'character character-correct' 
                       : 'character character-incorrect';
-                } else if (absoluteIndex === currentPosition - 1) {
-                  // Position the cursor one character behind the current position
+                } else if (absoluteIndex === currentPosition) {
+                  // Position the cursor at the current character
                   characterClass = 'character character-current';
                 } else {
                   characterClass = 'character character-pending';
@@ -82,8 +82,8 @@ const CodeSnippet: React.FC<CodeSnippetProps> = ({ code, currentPosition, typedC
 function getNewLineClass(newLineIndex: number, currentPosition: number): string {
   if (newLineIndex < currentPosition) {
     return 'character character-correct';
-  } else if (newLineIndex === currentPosition - 1) {
-    // Adjust cursor position for newline characters to be one behind
+  } else if (newLineIndex === currentPosition) {
+    // Adjust cursor position for newline characters
     return 'character character-current';
   }
   return 'character character-pending';
