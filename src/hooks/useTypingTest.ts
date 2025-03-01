@@ -1,9 +1,7 @@
-
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTest } from '../context/TestContext';
 import { calculateWPM, calculateAccuracy } from '../utils/typeTestUtils';
 import { useToast } from './use-toast';
-import { TestResults } from '../context/TestContext';
 
 interface UseTypingTestReturn {
   typedChars: string[];
@@ -48,14 +46,12 @@ export const useTypingTest = (): UseTypingTestReturn => {
   const testContainerRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<number | null>(null);
 
-  // Timer effect
   useEffect(() => {
     if (isTestActive && startTime) {
       timerRef.current = window.setInterval(() => {
         const elapsed = Math.floor((Date.now() - startTime) / 1000);
         setCurrentTime(elapsed);
         
-        // Calculate WPM
         if (currentPos > 0) {
           const currentWpm = calculateWPM(currentPos, elapsed);
           setWpm(currentWpm);
@@ -70,14 +66,12 @@ export const useTypingTest = (): UseTypingTestReturn => {
     };
   }, [isTestActive, startTime, currentPos]);
   
-  // Focus effect
   useEffect(() => {
     if (isTestActive && testContainerRef.current) {
       testContainerRef.current.focus();
     }
   }, [isTestActive]);
 
-  // Complete test function
   const completeTest = useCallback(() => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -85,11 +79,9 @@ export const useTypingTest = (): UseTypingTestReturn => {
     
     setIsComplete(true);
     
-    // Calculate final stats
     const finalElapsed = Math.floor((Date.now() - (startTime || 0)) / 1000);
     const finalWpm = calculateWPM(currentSnippet.code.length, finalElapsed);
     
-    // Submit results
     endTest({
       wpm: finalWpm,
       accuracy,
@@ -107,51 +99,86 @@ export const useTypingTest = (): UseTypingTestReturn => {
     });
   }, [accuracy, currentSnippet, endTest, errorCount, startTime, toast]);
 
-  // Keyboard event handler
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (!isTestActive || isComplete) return;
     
-    // Start timer on first keypress
     if (currentPos === 0 && !startTime) {
       setStartTime(Date.now());
     }
     
-    // Only process if it's a single character or special key
+    if (e.key === 'Enter') {
+      const expectedChar = currentSnippet.code[currentPos];
+      
+      if (expectedChar === '\n') {
+        const newTypedChars = [...typedChars];
+        newTypedChars[currentPos] = '\n';
+        setTypedChars(newTypedChars);
+        
+        const newPos = currentPos + 1;
+        setCurrentPos(newPos);
+        
+        const correctChars = newTypedChars.filter((char, i) => 
+          char === currentSnippet.code[i]
+        ).length;
+        
+        setAccuracy(calculateAccuracy(correctChars, newPos));
+        
+        if (newPos >= currentSnippet.code.length) {
+          completeTest();
+        }
+      } else {
+        const newTypedChars = [...typedChars];
+        newTypedChars[currentPos] = '\n';
+        setTypedChars(newTypedChars);
+        
+        setErrorCount(prev => prev + 1);
+        
+        const newPos = currentPos + 1;
+        setCurrentPos(newPos);
+        
+        const correctChars = newTypedChars.filter((char, i) => 
+          char === currentSnippet.code[i]
+        ).length;
+        
+        setAccuracy(calculateAccuracy(correctChars, newPos));
+        
+        if (newPos >= currentSnippet.code.length) {
+          completeTest();
+        }
+      }
+      
+      e.preventDefault();
+      return;
+    }
+    
     if (e.key.length === 1) {
       const expectedChar = currentSnippet.code[currentPos];
       const typedChar = e.key;
       
-      // Update typed characters array
       const newTypedChars = [...typedChars];
       newTypedChars[currentPos] = typedChar;
       setTypedChars(newTypedChars);
       
-      // Check for errors
       if (typedChar !== expectedChar) {
         setErrorCount(prev => prev + 1);
       }
       
-      // Update position
       const newPos = currentPos + 1;
       setCurrentPos(newPos);
       
-      // Calculate accuracy
       const correctChars = newTypedChars.filter((char, i) => 
         char === currentSnippet.code[i]
       ).length;
       
       setAccuracy(calculateAccuracy(correctChars, newPos));
       
-      // Check if test is complete
       if (newPos >= currentSnippet.code.length) {
         completeTest();
       }
     } else if (e.key === 'Backspace' && currentPos > 0) {
-      // Handle backspace
       const newPos = currentPos - 1;
       setCurrentPos(newPos);
       
-      // Update error count if correcting an error
       const expectedChar = currentSnippet.code[newPos];
       const typedChar = typedChars[newPos];
       
@@ -159,12 +186,10 @@ export const useTypingTest = (): UseTypingTestReturn => {
         setErrorCount(prev => Math.max(0, prev - 1));
       }
       
-      // Update typed characters array
       const newTypedChars = [...typedChars];
       newTypedChars.pop();
       setTypedChars(newTypedChars);
       
-      // Recalculate accuracy
       const correctChars = newTypedChars.filter((char, i) => 
         char === currentSnippet.code[i]
       ).length;
@@ -172,13 +197,11 @@ export const useTypingTest = (): UseTypingTestReturn => {
       setAccuracy(calculateAccuracy(correctChars, newPos));
     }
     
-    // Prevent default behavior for certain keys
     if (['Space', 'Tab', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
       e.preventDefault();
     }
   }, [isTestActive, isComplete, currentPos, startTime, typedChars, currentSnippet, completeTest]);
 
-  // Reset the test
   const handleReset = () => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -195,7 +218,6 @@ export const useTypingTest = (): UseTypingTestReturn => {
     resetTest();
   };
 
-  // Change test options
   const handleChangeAlgorithm = (algorithm: string) => {
     setSelectedAlgorithm(algorithm);
     const actualAlgorithm = algorithm === 'All' ? undefined : algorithm;
@@ -212,7 +234,6 @@ export const useTypingTest = (): UseTypingTestReturn => {
     handleReset();
   };
 
-  // Attach and detach keyboard event listeners
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
     return () => {
