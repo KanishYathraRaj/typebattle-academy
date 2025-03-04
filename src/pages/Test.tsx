@@ -27,26 +27,26 @@ const Test: React.FC = () => {
         
         <div className="container mx-auto px-4 py-8 relative">
           <div className="flex flex-row w-full relative">
-            <div className="flex-1 transition-all duration-300">
+            <div className={`fixed top-0 left-0 h-full bg-background border-r border-border shadow-lg transition-all duration-300 z-40 pt-16 ${sidebarOpen ? 'w-80' : 'w-0 opacity-0'}`}>
+              {sidebarOpen && <DsaSidebar />}
+            </div>
+            
+            <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-80' : 'ml-0'}`}>
               {results ? (
                 <TestComplete results={results} onRetry={resetTest} />
               ) : (
                 <TypeTest />
               )}
             </div>
-            
-            <div className={`fixed top-0 right-0 h-full bg-background border-l border-border shadow-lg transition-all duration-300 z-40 pt-16 ${sidebarOpen ? 'w-80' : 'w-0 opacity-0'}`}>
-              {sidebarOpen && <DsaSidebar />}
-            </div>
           </div>
           
           <Button 
             variant="outline" 
             size="icon" 
-            className="fixed top-1/2 right-0 transform -translate-y-1/2 z-50 rounded-l-lg rounded-r-none border-r-0 h-16"
+            className="fixed top-1/2 left-0 transform -translate-y-1/2 z-50 rounded-r-lg rounded-l-none border-l-0 h-16"
             onClick={toggleSidebar}
           >
-            {sidebarOpen ? <ChevronRight /> : <ChevronLeft />}
+            {sidebarOpen ? <ChevronLeft /> : <ChevronRight />}
           </Button>
         </div>
       </main>
