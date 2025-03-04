@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 interface CodeSnippetProps {
@@ -10,26 +11,12 @@ const CodeSnippet: React.FC<CodeSnippetProps> = ({ code, currentPosition, typedC
   // Split the code by newlines to handle line breaks properly
   const codeLines = code.split('\n');
   
-  // Calculate the current line and character position
-  let currentLine = 0;
-  let currentChar = 0;
-  let charCount = 0;
-  
-  for (let i = 0; i < codeLines.length; i++) {
-    if (charCount + codeLines[i].length + (i > 0 ? 1 : 0) > currentPosition) {
-      currentLine = i;
-      currentChar = currentPosition - charCount - (i > 0 ? 1 : 0);
-      break;
-    }
-    charCount += codeLines[i].length + (i > 0 ? 1 : 0);
-  }
-
   return (
-    <div className="w-full rounded-lg bg-card p-6 border border-border/50 overflow-x-auto">
+    <div className="w-full rounded-lg bg-card p-6 overflow-x-auto">
       <pre className="font-mono text-base leading-relaxed">
         {codeLines.map((line, lineIndex) => {
           return (
-            <div key={lineIndex} className="whitespace-pre">
+            <div key={lineIndex} className="whitespace-pre relative">
               {line.split('').map((char, charIndex) => {
                 const absoluteIndex = lineIndex === 0 
                   ? charIndex 
