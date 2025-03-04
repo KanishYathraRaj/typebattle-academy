@@ -44,14 +44,7 @@ const TypeTest: React.FC = () => {
       className="test-container focus:outline-none"
       tabIndex={0}  // Make div focusable
     >
-      <TestHeader 
-        isTestActive={isTestActive}
-        isComplete={isComplete}
-        wpm={wpm}
-        accuracy={accuracy}
-        time={currentTime}
-        errorCount={errorCount}
-      />
+      <TestHeader />
       
       <CodeSnippet 
         code={currentSnippet.code} 

@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import TypeTest from '../components/TypeTest';
 import TestComplete from '../components/TestComplete';
 import { useTest } from '../context/TestContext';
+import RightSidebar from '../components/RightSidebar';
 
 const Test: React.FC = () => {
   const { results, resetTest } = useTest();
@@ -14,12 +15,15 @@ const Test: React.FC = () => {
       <Navbar />
       
       <main className="flex-1 pt-32 pb-16">
-        <div className="container">
-          {results ? (
-            <TestComplete results={results} onRetry={resetTest} />
-          ) : (
-            <TypeTest />
-          )}
+        <div className="container flex flex-col md:flex-row gap-6">
+          <div className="flex-1">
+            {results ? (
+              <TestComplete results={results} onRetry={resetTest} />
+            ) : (
+              <TypeTest />
+            )}
+          </div>
+          <RightSidebar />
         </div>
       </main>
       

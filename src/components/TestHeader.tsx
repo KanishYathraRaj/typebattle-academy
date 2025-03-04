@@ -1,25 +1,8 @@
 
 import React from 'react';
 import { useTest } from '../context/TestContext';
-import StatisticsPanel from './StatisticsPanel';
 
-interface TestHeaderProps {
-  isTestActive: boolean;
-  isComplete: boolean;
-  wpm: number;
-  accuracy: number;
-  time: number;
-  errorCount: number;
-}
-
-const TestHeader: React.FC<TestHeaderProps> = ({ 
-  isTestActive, 
-  isComplete, 
-  wpm, 
-  accuracy, 
-  time, 
-  errorCount 
-}) => {
+const TestHeader: React.FC = () => {
   const { currentSnippet } = useTest();
 
   return (
@@ -33,15 +16,6 @@ const TestHeader: React.FC<TestHeaderProps> = ({
           {currentSnippet.description}
         </span>
       </div>
-      
-      {(isTestActive || isComplete) && (
-        <StatisticsPanel 
-          wpm={wpm} 
-          accuracy={accuracy} 
-          time={time} 
-          errorCount={errorCount}
-        />
-      )}
     </div>
   );
 };
