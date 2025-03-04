@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface CodeSnippetProps {
@@ -39,29 +38,26 @@ const CodeSnippet: React.FC<CodeSnippetProps> = ({ code, currentPosition, typedC
                 let characterClass = '';
                 
                 if (absoluteIndex < currentPosition) {
-                  characterClass = 
-                    typedChars[absoluteIndex] === char 
+                  const isCorrect = typedChars[absoluteIndex] === char;
+                  if (!isCorrect && char === ' ') {
+                    characterClass = 'character character-incorrect-space';
+                  } else {
+                    characterClass = isCorrect 
                       ? 'character character-correct' 
                       : 'character character-incorrect';
+                  }
                 } else if (absoluteIndex === currentPosition) {
-                  // Position the cursor at the current character
                   characterClass = 'character character-current';
                 } else {
                   characterClass = 'character character-pending';
                 }
                 
-                // Preserve spaces in the rendered output
-                if (char === ' ') {
-                  return <span key={charIndex} className={characterClass}>&nbsp;</span>;
-                }
-                
                 return (
                   <span key={charIndex} className={characterClass}>
-                    {char}
+                    {char === ' ' ? '\u00A0' : char}
                   </span>
                 );
               })}
-              {/* Add a line break if this isn't the last line */}
               {lineIndex < codeLines.length - 1 && (
                 <span className={getNewLineClass(
                   codeLines.slice(0, lineIndex + 1).join('\n').length,
