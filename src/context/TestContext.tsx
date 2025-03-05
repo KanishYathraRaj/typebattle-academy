@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
-import { getRandomCodeSnippet, getCodeSnippets } from '../utils/codeSnippets';
+import { getCodeSnippet, getRandomCodeSnippet, getAlgorithms, getLanguages } from '../utils/codeSnippets';
 
 export type TestResults = {
   wpm: number;
@@ -69,7 +69,17 @@ export const TestProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (snippetCache.current[cacheKey]) {
       setCurrentSnippet(snippetCache.current[cacheKey]);
     } else {
-      // Get a new snippet and cache it
+      // If both algorithm and language are specified, try to get the exact match first
+      if (algorithm && language) {
+        const exactMatch = getCodeSnippet(algorithm, language);
+        if (exactMatch) {
+          snippetCache.current[cacheKey] = exactMatch;
+          setCurrentSnippet(exactMatch);
+          return;
+        }
+      }
+      
+      // Otherwise get a random matching snippet
       const newSnippet = getRandomCodeSnippet(algorithm, language);
       snippetCache.current[cacheKey] = newSnippet;
       setCurrentSnippet(newSnippet);
@@ -78,23 +88,41 @@ export const TestProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Initialize the cache with one snippet for each algorithm-language combination
   useEffect(() => {
-    const algorithms = ['all', 'Binary Search', 'Merge Sort', 'Quick Sort', 'Depth-First Search', 
-                        'Breadth-First Search', 'Dynamic Programming - Fibonacci', 'Knapsack Problem',
-                        'Dijkstra\'s Algorithm', 'Floyd-Warshall Algorithm'];
-    const languages = ['all', 'JavaScript', 'TypeScript', 'Python', 'Java', 'C++'];
+    const algorithms = getAlgorithms();
+    const languages = getLanguages();
     
     // Pre-cache one snippet for each combination to ensure consistency
     algorithms.forEach(algo => {
       languages.forEach(lang => {
-        const actualAlgo = algo === 'all' ? undefined : algo;
-        const actualLang = lang === 'all' ? undefined : lang;
-        const cacheKey = `${actualAlgo || 'all'}-${actualLang || 'all'}`;
+        // Try to get exact match for this algorithm-language pair
+        const exactMatch = getCodeSnippet(algo, lang);
+        const cacheKey = `${algo}-${lang}`;
         
-        if (!snippetCache.current[cacheKey]) {
-          snippetCache.current[cacheKey] = getRandomCodeSnippet(actualAlgo, actualLang);
+        if (exactMatch) {
+          snippetCache.current[cacheKey] = exactMatch;
         }
       });
     });
+    
+    // Also cache the "all" combinations
+    languages.forEach(lang => {
+      const cacheKey = `all-${lang}`;
+      if (!snippetCache.current[cacheKey]) {
+        snippetCache.current[cacheKey] = getRandomCodeSnippet(undefined, lang);
+      }
+    });
+    
+    algorithms.forEach(algo => {
+      const cacheKey = `${algo}-all`;
+      if (!snippetCache.current[cacheKey]) {
+        snippetCache.current[cacheKey] = getRandomCodeSnippet(algo, undefined);
+      }
+    });
+    
+    // And the "all-all" case
+    if (!snippetCache.current['all-all']) {
+      snippetCache.current['all-all'] = getRandomCodeSnippet();
+    }
   }, []);
 
   return (
