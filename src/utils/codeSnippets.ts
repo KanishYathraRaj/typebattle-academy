@@ -523,8 +523,8 @@ export const getLanguages = (): string[] => {
   return [...new Set(codeSnippets.map(snippet => snippet.language))];
 };
 
-// Get a random code snippet
-export const getRandomCodeSnippet = (algorithm?: string, language?: string): CodeSnippet => {
+// Get all code snippets for a specific algorithm and language
+export const getCodeSnippets = (algorithm?: string, language?: string): CodeSnippet[] => {
   let filteredSnippets = [...codeSnippets];
   
   if (algorithm) {
@@ -534,6 +534,13 @@ export const getRandomCodeSnippet = (algorithm?: string, language?: string): Cod
   if (language) {
     filteredSnippets = filteredSnippets.filter(snippet => snippet.language === language);
   }
+  
+  return filteredSnippets;
+};
+
+// Get a random code snippet
+export const getRandomCodeSnippet = (algorithm?: string, language?: string): CodeSnippet => {
+  let filteredSnippets = getCodeSnippets(algorithm, language);
   
   if (filteredSnippets.length === 0) {
     return codeSnippets[Math.floor(Math.random() * codeSnippets.length)];

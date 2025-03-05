@@ -1,6 +1,6 @@
 
-import React, { createContext, useContext, useState } from 'react';
-import { getRandomCodeSnippet } from '../utils/codeSnippets';
+import React, { createContext, useContext, useState, useRef } from 'react';
+import { getRandomCodeSnippet, getCodeSnippets } from '../utils/codeSnippets';
 
 export type TestResults = {
   wpm: number;
@@ -35,6 +35,9 @@ export const TestProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [currentSnippet, setCurrentSnippet] = useState(() => getRandomCodeSnippet());
   const [isTestActive, setIsTestActive] = useState(false);
   const [results, setResults] = useState<TestResults | null>(null);
+  
+  // Use a ref to maintain consistent snippets for algorithm-language pairs
+  const snippetCache = useRef<Record<string, any>>({});
 
   const startTest = () => {
     setIsTestActive(true);
@@ -53,7 +56,18 @@ export const TestProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const changeSnippet = (algorithm?: string, language?: string) => {
-    setCurrentSnippet(getRandomCodeSnippet(algorithm, language));
+    // Create a cache key based on the algorithm and language
+    const cacheKey = `${algorithm || 'all'}-${language || 'all'}`;
+    
+    // Check if we already have a snippet for this combination
+    if (snippetCache.current[cacheKey]) {
+      setCurrentSnippet(snippetCache.current[cacheKey]);
+    } else {
+      // Get a new snippet and cache it
+      const newSnippet = getRandomCodeSnippet(algorithm, language);
+      snippetCache.current[cacheKey] = newSnippet;
+      setCurrentSnippet(newSnippet);
+    }
   };
 
   return (
