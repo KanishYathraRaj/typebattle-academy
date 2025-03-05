@@ -12,11 +12,11 @@ const CodeSnippet: React.FC<CodeSnippetProps> = ({ code, currentPosition, typedC
   const codeLines = code.split('\n');
   
   return (
-    <div className="w-full rounded-lg bg-card p-6 overflow-x-auto">
-      <pre className="font-mono text-base leading-relaxed">
+    <div className="w-full p-6 font-mono text-base overflow-x-auto">
+      <pre className="leading-relaxed">
         {codeLines.map((line, lineIndex) => {
           return (
-            <div key={lineIndex} className="whitespace-pre relative">
+            <div key={lineIndex} className="whitespace-pre">
               {line.split('').map((char, charIndex) => {
                 const absoluteIndex = lineIndex === 0 
                   ? charIndex 
@@ -27,20 +27,27 @@ const CodeSnippet: React.FC<CodeSnippetProps> = ({ code, currentPosition, typedC
                 if (absoluteIndex < currentPosition) {
                   const isCorrect = typedChars[absoluteIndex] === char;
                   if (!isCorrect && char === ' ') {
-                    characterClass = 'character character-incorrect-space';
+                    characterClass = 'bg-destructive/20 text-destructive';
                   } else {
                     characterClass = isCorrect 
-                      ? 'character character-correct' 
-                      : 'character character-incorrect';
+                      ? 'text-primary/90' 
+                      : 'text-destructive font-bold underline decoration-destructive decoration-2 underline-offset-4';
                   }
                 } else if (absoluteIndex === currentPosition) {
-                  characterClass = 'character character-current';
+                  characterClass = 'relative';
                 } else {
-                  characterClass = 'character character-pending';
+                  characterClass = 'text-muted-foreground/70';
                 }
                 
                 return (
-                  <span key={charIndex} className={characterClass}>
+                  <span 
+                    key={charIndex} 
+                    className={`transition-colors duration-75 ${characterClass}`}
+                    data-char={char}
+                  >
+                    {absoluteIndex === currentPosition && (
+                      <span className="absolute h-[1.2em] w-0.5 bg-primary animate-caret-blink -ml-[1px]"></span>
+                    )}
                     {char === ' ' ? '\u00A0' : char}
                   </span>
                 );
@@ -48,7 +55,8 @@ const CodeSnippet: React.FC<CodeSnippetProps> = ({ code, currentPosition, typedC
               {lineIndex < codeLines.length - 1 && (
                 <span className={getNewLineClass(
                   codeLines.slice(0, lineIndex + 1).join('\n').length,
-                  currentPosition
+                  currentPosition,
+                  typedChars
                 )}>
                   {'\n'}
                 </span>
@@ -62,14 +70,19 @@ const CodeSnippet: React.FC<CodeSnippetProps> = ({ code, currentPosition, typedC
 };
 
 // Helper function to determine class for newline characters
-function getNewLineClass(newLineIndex: number, currentPosition: number): string {
+function getNewLineClass(newLineIndex: number, currentPosition: number, typedChars: string[]): string {
+  let baseClass = 'transition-colors duration-75';
+  
   if (newLineIndex < currentPosition) {
-    return 'character character-correct';
+    const isCorrect = typedChars[newLineIndex] === '\n';
+    return isCorrect
+      ? `${baseClass} text-primary/90`
+      : `${baseClass} text-destructive font-bold`;
   } else if (newLineIndex === currentPosition) {
-    // Adjust cursor position for newline characters
-    return 'character character-current';
+    return `${baseClass} relative`;
   }
-  return 'character character-pending';
+  
+  return `${baseClass} text-muted-foreground/70`;
 }
 
 export default CodeSnippet;

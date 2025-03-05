@@ -12,10 +12,10 @@ const StatsHeader: React.FC = () => {
   if (!isTestActive && !isComplete) return null;
   
   return (
-    <div className="fixed top-16 right-0 z-40 p-2 w-full bg-card/80 backdrop-blur-sm border-b border-border shadow-sm">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-end gap-6">
-          <StatItem icon={<Keyboard className="h-4 w-4" />} value={wpm} label="WPM" />
+    <div className="sticky top-16 z-30 w-full bg-background/80 backdrop-blur-sm border-b border-border">
+      <div className="container mx-auto py-2 px-4">
+        <div className="flex justify-center gap-8 items-center">
+          <StatItem icon={<Keyboard className="h-4 w-4" />} value={wpm} label="WPM" primary />
           <StatItem icon={<Target className="h-4 w-4" />} value={`${accuracy}%`} label="Accuracy" />
           <StatItem icon={<Clock className="h-4 w-4" />} value={formatTime(currentTime)} label="Time" />
           <StatItem icon={<AlertTriangle className="h-4 w-4" />} value={errorCount} label="Errors" />
@@ -25,14 +25,24 @@ const StatsHeader: React.FC = () => {
   );
 };
 
-const StatItem: React.FC<{ icon: React.ReactNode, value: string | number, label: string }> = ({ 
-  icon, value, label 
+const StatItem: React.FC<{ 
+  icon: React.ReactNode, 
+  value: string | number, 
+  label: string,
+  primary?: boolean 
+}> = ({ 
+  icon, 
+  value, 
+  label,
+  primary = false
 }) => {
   return (
     <div className="flex items-center gap-2">
-      <div className="text-primary">{icon}</div>
+      <div className={primary ? "text-primary" : "text-muted-foreground"}>{icon}</div>
       <div>
-        <p className="font-bold text-sm">{value}</p>
+        <p className={`font-mono ${primary ? 'text-xl font-bold text-primary' : 'text-base font-medium text-foreground'}`}>
+          {value}
+        </p>
         <p className="text-xs text-muted-foreground">{label}</p>
       </div>
     </div>

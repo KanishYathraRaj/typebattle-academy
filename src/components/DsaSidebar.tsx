@@ -4,8 +4,9 @@ import { getAlgorithms, getLanguages } from '../utils/codeSnippets';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { useTest } from '../context/TestContext';
 import { useTypingTest } from '../hooks/useTypingTest';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Code, BookOpen, Layers, ChevronDown } from 'lucide-react';
 import { Separator } from './ui/separator';
+import { cn } from '@/lib/utils';
 
 const DsaSidebar: React.FC = () => {
   const { currentSnippet, changeSnippet } = useTest();
@@ -29,13 +30,21 @@ const DsaSidebar: React.FC = () => {
   };
 
   return (
-    <div className="h-full overflow-y-auto p-4 pt-6 pb-24">
-      <h2 className="text-2xl font-bold mb-4">DSA Syllabus</h2>
+    <div className="h-full overflow-y-auto py-4 px-4 font-sans">
+      <div className="flex items-center mb-6">
+        <Code className="h-5 w-5 mr-2 text-primary" />
+        <h2 className="text-xl font-bold">DSA Practice</h2>
+      </div>
       
       <div className="mb-6">
-        <label className="text-sm font-medium mb-2 block">Programming Language</label>
+        <label className="block text-sm font-medium mb-2 text-muted-foreground">
+          <div className="flex items-center">
+            <Layers className="h-4 w-4 mr-1" />
+            <span>Programming Language</span>
+          </div>
+        </label>
         <Select value={selectedLanguage} onValueChange={handleLanguageChange}>
-          <SelectTrigger>
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="Select Language" />
           </SelectTrigger>
           <SelectContent>
@@ -48,36 +57,39 @@ const DsaSidebar: React.FC = () => {
         </Select>
       </div>
       
-      <div className="mb-6">
-        <h3 className="text-sm font-medium mb-2 block">Algorithm Categories</h3>
-        <div className="space-y-2">
-          {algorithms.map(algorithm => (
-            <Card 
-              key={algorithm} 
-              className={`cursor-pointer transition-colors ${selectedAlgorithm === algorithm ? 'bg-primary/10 border-primary/50' : ''}`}
-              onClick={() => handleAlgorithmChange(algorithm)}
-            >
-              <CardContent className="p-3">
-                <div className="font-medium">{algorithm}</div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-2 text-muted-foreground">
+          <div className="flex items-center">
+            <BookOpen className="h-4 w-4 mr-1" />
+            <span>Algorithm Categories</span>
+          </div>
+        </label>
+      </div>
+      
+      <div className="space-y-1">
+        {algorithms.map(algorithm => (
+          <button
+            key={algorithm}
+            className={cn(
+              "w-full text-left px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent",
+              selectedAlgorithm === algorithm 
+                ? "bg-primary/10 text-primary font-medium" 
+                : "text-foreground"
+            )}
+            onClick={() => handleAlgorithmChange(algorithm)}
+          >
+            {algorithm}
+          </button>
+        ))}
       </div>
       
       <Separator className="my-6" />
       
-      <div>
-        <h3 className="text-lg font-medium mb-3">Current Selection</h3>
-        <Card>
-          <CardHeader className="p-4 pb-2">
-            <CardTitle className="text-base">{currentSnippet.algorithm}</CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <div className="text-xs text-muted-foreground mb-1">{currentSnippet.language}</div>
-            <p className="text-sm">{currentSnippet.description}</p>
-          </CardContent>
-        </Card>
+      <div className="rounded-md bg-card p-4 border border-border">
+        <h3 className="text-sm font-medium mb-2">Current Selection</h3>
+        <div className="text-xs font-mono mb-1 text-primary">{currentSnippet.language}</div>
+        <div className="font-medium mb-1">{currentSnippet.algorithm}</div>
+        <p className="text-xs text-muted-foreground">{currentSnippet.description}</p>
       </div>
     </div>
   );

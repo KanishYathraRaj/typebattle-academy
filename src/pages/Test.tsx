@@ -19,37 +19,43 @@ const Test: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-background">
       <Navbar />
       
-      <main className="flex-1 pt-16 pb-16 relative">
-        <StatsHeader />
-        
-        <div className="container mx-auto px-4 py-8 relative">
-          <div className="flex flex-row w-full relative">
-            <div className={`fixed top-0 left-0 h-full bg-background border-r border-border shadow-lg transition-all duration-300 z-40 pt-16 ${sidebarOpen ? 'w-80' : 'w-0 opacity-0'}`}>
-              {sidebarOpen && <DsaSidebar />}
-            </div>
-            
-            <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-80' : 'ml-0'}`}>
-              {results ? (
-                <TestComplete results={results} onRetry={resetTest} />
-              ) : (
-                <TypeTest />
-              )}
-            </div>
-          </div>
-          
-          <Button 
-            variant="outline" 
-            size="icon" 
-            className="fixed top-1/2 left-0 transform -translate-y-1/2 z-50 rounded-r-lg rounded-l-none border-l-0 h-16"
-            onClick={toggleSidebar}
-          >
-            {sidebarOpen ? <ChevronLeft /> : <ChevronRight />}
-          </Button>
+      <div className="flex flex-1 pt-16 relative">
+        {/* Left Sidebar */}
+        <div 
+          className={`fixed top-0 left-0 h-full bg-background border-r border-border z-40 pt-16 transition-all duration-300 ${
+            sidebarOpen ? 'w-72 translate-x-0' : 'w-72 -translate-x-full'
+          }`}
+        >
+          <DsaSidebar />
         </div>
-      </main>
+        
+        {/* Toggle Sidebar Button */}
+        <Button 
+          variant="outline" 
+          size="icon" 
+          className="fixed top-28 left-0 z-50 rounded-r-md rounded-l-none border-l-0 shadow-md"
+          onClick={toggleSidebar}
+        >
+          {sidebarOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+        </Button>
+        
+        {/* Main Content */}
+        <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-72' : 'ml-0'}`}>
+          {/* Stats Header */}
+          <StatsHeader />
+          
+          <div className="container max-w-4xl mx-auto px-4 py-8">
+            {results ? (
+              <TestComplete results={results} onRetry={resetTest} />
+            ) : (
+              <TypeTest />
+            )}
+          </div>
+        </main>
+      </div>
       
       <Footer />
     </div>
