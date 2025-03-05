@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap');
 
 @tailwind base;
@@ -179,6 +180,28 @@
 
   .button-highlight:hover::after {
     @apply scale-x-100;
+  }
+  
+  /* Code editor specific styles */
+  pre {
+    font-family: 'JetBrains Mono', monospace;
+    tab-size: 4;
+  }
+  
+  .code-line {
+    @apply relative;
+  }
+  
+  .code-line-active {
+    @apply bg-primary/10;
+  }
+  
+  .line-numbers {
+    @apply text-muted-foreground text-right pr-4 select-none border-r border-border mr-4;
+  }
+  
+  .line-number-active {
+    @apply text-primary font-medium;
   }
 }
 
