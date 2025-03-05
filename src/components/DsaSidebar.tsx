@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getAlgorithms, getLanguages } from '../utils/codeSnippets';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { useTest } from '../context/TestContext';
@@ -16,6 +16,12 @@ const DsaSidebar: React.FC = () => {
   
   const algorithms = getAlgorithms();
   const languages = getLanguages();
+  
+  // Update local state when currentSnippet changes
+  useEffect(() => {
+    setSelectedAlgorithm(currentSnippet.algorithm);
+    setSelectedLanguage(currentSnippet.language);
+  }, [currentSnippet]);
   
   const handleAlgorithmChange = (algorithm: string) => {
     setSelectedAlgorithm(algorithm);

@@ -1,5 +1,4 @@
-
-import React, { createContext, useContext, useState, useRef } from 'react';
+import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
 import { getRandomCodeSnippet, getCodeSnippets } from '../utils/codeSnippets';
 
 export type TestResults = {
@@ -36,8 +35,10 @@ export const TestProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isTestActive, setIsTestActive] = useState(false);
   const [results, setResults] = useState<TestResults | null>(null);
   
-  // Use a ref to maintain consistent snippets for algorithm-language pairs
+  // Use a permanent cache to ensure consistency across sessions
   const snippetCache = useRef<Record<string, any>>({});
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState<string | undefined>(undefined);
+  const [selectedLanguage, setSelectedLanguage] = useState<string | undefined>(undefined);
 
   const startTest = () => {
     setIsTestActive(true);
@@ -52,10 +53,15 @@ export const TestProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const resetTest = () => {
     setIsTestActive(false);
     setResults(null);
-    setCurrentSnippet(getRandomCodeSnippet());
+    // When resetting, keep the same algorithm and language selection
+    changeSnippet(selectedAlgorithm, selectedLanguage);
   };
 
   const changeSnippet = (algorithm?: string, language?: string) => {
+    // Update the selected algorithm and language
+    setSelectedAlgorithm(algorithm);
+    setSelectedLanguage(language);
+    
     // Create a cache key based on the algorithm and language
     const cacheKey = `${algorithm || 'all'}-${language || 'all'}`;
     
@@ -69,6 +75,27 @@ export const TestProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setCurrentSnippet(newSnippet);
     }
   };
+
+  // Initialize the cache with one snippet for each algorithm-language combination
+  useEffect(() => {
+    const algorithms = ['all', 'Binary Search', 'Merge Sort', 'Quick Sort', 'Depth-First Search', 
+                        'Breadth-First Search', 'Dynamic Programming - Fibonacci', 'Knapsack Problem',
+                        'Dijkstra\'s Algorithm', 'Floyd-Warshall Algorithm'];
+    const languages = ['all', 'JavaScript', 'TypeScript', 'Python', 'Java', 'C++'];
+    
+    // Pre-cache one snippet for each combination to ensure consistency
+    algorithms.forEach(algo => {
+      languages.forEach(lang => {
+        const actualAlgo = algo === 'all' ? undefined : algo;
+        const actualLang = lang === 'all' ? undefined : lang;
+        const cacheKey = `${actualAlgo || 'all'}-${actualLang || 'all'}`;
+        
+        if (!snippetCache.current[cacheKey]) {
+          snippetCache.current[cacheKey] = getRandomCodeSnippet(actualAlgo, actualLang);
+        }
+      });
+    });
+  }, []);
 
   return (
     <TestContext.Provider value={{
