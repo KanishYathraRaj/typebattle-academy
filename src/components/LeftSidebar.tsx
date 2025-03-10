@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useTest } from '../context/TestContext';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { ChevronDown, ChevronRight, Code } from 'lucide-react';
-import { getAlgorithms, getLanguages } from '../utils/codeSnippets';
+import { getCategories, getLanguages, getTopics } from '../utils/codeSnippets';
 
 // DSA syllabus structure
 const dsaSyllabus = [
@@ -73,8 +73,8 @@ const LeftSidebar: React.FC = () => {
   const [expandedTopics, setExpandedTopics] = useState<string[]>([]);
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
   
-  // Get available algorithms and languages from codeSnippets utility
-  const algorithms = getAlgorithms();
+  // Get available categories and languages from codeSnippets utility
+  const categories = getCategories();
   const languages = getLanguages();
   
   const toggleTopic = (topic: string) => {
@@ -85,15 +85,15 @@ const LeftSidebar: React.FC = () => {
     );
   };
   
-  const handleAlgorithmSelect = (algorithm: string) => {
-    changeSnippet(algorithm, selectedLanguage || undefined);
+  const handleCategorySelect = (category: string) => {
+    changeSnippet(category, selectedLanguage || undefined);
   };
   
   const handleLanguageSelect = (language: string) => {
     setSelectedLanguage(language);
-    // If a language is selected, keep the current algorithm if any
-    const currentAlgorithm = document.querySelector('.algorithm-item.selected')?.textContent || undefined;
-    changeSnippet(currentAlgorithm, language);
+    // If a language is selected, keep the current category if any
+    const currentCategory = document.querySelector('.algorithm-item.selected')?.textContent || undefined;
+    changeSnippet(currentCategory, language);
   };
   
   return (
@@ -157,7 +157,7 @@ const LeftSidebar: React.FC = () => {
                       <div 
                         key={i} 
                         className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer flex items-center gap-1.5"
-                        onClick={() => handleAlgorithmSelect(subtopic)}
+                        onClick={() => handleCategorySelect(subtopic)}
                       >
                         <Code className="h-3.5 w-3.5" />
                         <span>{subtopic}</span>
@@ -171,21 +171,21 @@ const LeftSidebar: React.FC = () => {
         </CardContent>
       </Card>
       
-      {/* Available Algorithms */}
+      {/* Available NeetCode Categories */}
       <Card className="glass">
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg">Available Algorithms</CardTitle>
+          <CardTitle className="text-lg">NeetCode Categories</CardTitle>
         </CardHeader>
         <CardContent className="max-h-[calc(100vh-300px)] overflow-y-auto pr-1">
           <div className="space-y-2">
-            {algorithms.map((algorithm, index) => (
+            {categories.map((category, index) => (
               <div 
                 key={index}
                 className="algorithm-item flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted/50 cursor-pointer transition-colors"
-                onClick={() => handleAlgorithmSelect(algorithm)}
+                onClick={() => handleCategorySelect(category)}
               >
                 <Code className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">{algorithm}</span>
+                <span className="text-sm">{category}</span>
               </div>
             ))}
           </div>

@@ -6,47 +6,47 @@ import {
   SelectItem, 
   SelectTrigger, 
   SelectValue 
-} from '../components/ui/select';
-import { getAlgorithms, getLanguages } from '../utils/codeSnippets';
-import { Button } from '../components/ui/button';
+} from './ui/select';
+import { getCategories, getLanguages } from '../utils/codeSnippets';
+import { Button } from './ui/button';
 import { RefreshCw } from 'lucide-react';
 
 interface TestOptionsProps {
-  selectedAlgorithm: string;
+  selectedCategory: string;
   selectedLanguage: string;
-  onAlgorithmChange: (algorithm: string) => void;
+  onCategoryChange: (category: string) => void;
   onLanguageChange: (language: string) => void;
   onReset: () => void;
 }
 
 const TestOptions: React.FC<TestOptionsProps> = ({
-  selectedAlgorithm,
+  selectedCategory,
   selectedLanguage,
-  onAlgorithmChange,
+  onCategoryChange,
   onLanguageChange,
   onReset
 }) => {
-  const algorithms = ['All', ...getAlgorithms()];
+  const categories = ['All', ...getCategories()];
   const languages = ['All', ...getLanguages()];
 
   return (
     <div className="flex flex-col md:flex-row gap-4 md:items-center w-full mt-6">
       <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="algorithm-select" className="text-sm font-medium mb-1 block">
-            Algorithm
+          <label htmlFor="category-select" className="text-sm font-medium mb-1 block">
+            Category
           </label>
           <Select 
-            value={selectedAlgorithm} 
-            onValueChange={onAlgorithmChange}
+            value={selectedCategory} 
+            onValueChange={onCategoryChange}
           >
-            <SelectTrigger id="algorithm-select" className="w-full">
-              <SelectValue placeholder="Select Algorithm" />
+            <SelectTrigger id="category-select" className="w-full">
+              <SelectValue placeholder="Select Category" />
             </SelectTrigger>
             <SelectContent>
-              {algorithms.map(algorithm => (
-                <SelectItem key={algorithm} value={algorithm}>
-                  {algorithm}
+              {categories.map(category => (
+                <SelectItem key={category} value={category}>
+                  {category}
                 </SelectItem>
               ))}
             </SelectContent>
