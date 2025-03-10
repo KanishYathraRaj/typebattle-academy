@@ -43,14 +43,17 @@ export const useTypingTest = (): UseTypingTestReturn => {
   const [accuracy, setAccuracy] = useState(100);
   const [errorCount, setErrorCount] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [selectedTopic, setSelectedTopic] = useState('All');
-  const [selectedLanguage, setSelectedLanguage] = useState('All');
+  
+  // Important: These state variables must be defined after the other state variables
+  // to maintain consistent hook order across renders
+  const [selectedCategory, setSelectedCategory] = useState(currentSnippet.category);
+  const [selectedTopic, setSelectedTopic] = useState(currentSnippet.topic);
+  const [selectedLanguage, setSelectedLanguage] = useState(currentSnippet.language);
   
   const testContainerRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<number | null>(null);
 
-  // Update local state when currentSnippet changes
+  // Update local state when snippet changes (must maintain hook order)
   useEffect(() => {
     setSelectedCategory(currentSnippet.category);
     setSelectedTopic(currentSnippet.topic);
@@ -232,6 +235,7 @@ export const useTypingTest = (): UseTypingTestReturn => {
   };
 
   const handleChangeCategory = (category: string) => {
+    console.log("Changing category to:", category);
     setSelectedCategory(category);
     const actualCategory = category === 'All' ? undefined : category;
     const actualTopic = selectedTopic === 'All' ? undefined : selectedTopic;
@@ -241,6 +245,7 @@ export const useTypingTest = (): UseTypingTestReturn => {
   };
   
   const handleChangeTopic = (topic: string) => {
+    console.log("Changing topic to:", topic);
     setSelectedTopic(topic);
     const actualCategory = selectedCategory === 'All' ? undefined : selectedCategory;
     const actualTopic = topic === 'All' ? undefined : topic;
@@ -250,6 +255,7 @@ export const useTypingTest = (): UseTypingTestReturn => {
   };
   
   const handleChangeLanguage = (language: string) => {
+    console.log("Changing language to:", language);
     setSelectedLanguage(language);
     const actualCategory = selectedCategory === 'All' ? undefined : selectedCategory;
     const actualTopic = selectedTopic === 'All' ? undefined : selectedTopic;

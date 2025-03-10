@@ -11,11 +11,17 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collap
 import { Badge } from './ui/badge';
 
 const DsaSidebar: React.FC = () => {
-  const { currentSnippet, changeSnippet } = useTest();
-  const { handleReset } = useTypingTest();
-  const [selectedCategory, setSelectedCategory] = useState<string>(currentSnippet.category);
-  const [selectedTopic, setSelectedTopic] = useState<string>(currentSnippet.topic);
-  const [selectedLanguage, setSelectedLanguage] = useState<string>(currentSnippet.language);
+  const { currentSnippet } = useTest();
+  const { 
+    handleChangeCategory, 
+    handleChangeTopic, 
+    handleChangeLanguage,
+    selectedCategory,
+    selectedTopic,
+    selectedLanguage 
+  } = useTypingTest();
+  
+  // Only local UI states, no duplicated state management
   const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({});
   
   const categories = getCategories();
@@ -28,33 +34,7 @@ const DsaSidebar: React.FC = () => {
       initialOpenCategories[category] = category === selectedCategory;
     });
     setOpenCategories(initialOpenCategories);
-  }, []);
-  
-  // Update local state when currentSnippet changes
-  useEffect(() => {
-    setSelectedCategory(currentSnippet.category);
-    setSelectedTopic(currentSnippet.topic);
-    setSelectedLanguage(currentSnippet.language);
-    
-    // Open the category that contains the current topic
-    setOpenCategories(prev => ({
-      ...prev,
-      [currentSnippet.category]: true
-    }));
-  }, [currentSnippet]);
-  
-  const handleLanguageChange = (language: string) => {
-    setSelectedLanguage(language);
-    changeSnippet(selectedCategory, selectedTopic, language);
-    handleReset();
-  };
-
-  const handleTopicChange = (category: string, topic: string) => {
-    setSelectedCategory(category);
-    setSelectedTopic(topic);
-    changeSnippet(category, topic, selectedLanguage);
-    handleReset();
-  };
+  }, [categories, selectedCategory]);
   
   const toggleCategory = (category: string) => {
     setOpenCategories(prev => ({
@@ -84,7 +64,7 @@ const DsaSidebar: React.FC = () => {
             <span>Programming Language</span>
           </div>
         </label>
-        <Select value={selectedLanguage} onValueChange={handleLanguageChange}>
+        <Select value={selectedLanguage} onValueChange={handleChangeLanguage}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select Language" />
           </SelectTrigger>
@@ -136,7 +116,7 @@ const DsaSidebar: React.FC = () => {
                             ? "bg-primary/10 text-primary font-medium" 
                             : "text-foreground hover:bg-accent"
                         )}
-                        onClick={() => handleTopicChange(category, topic)}
+                        onClick={() => handleChangeTopic(topic)}
                       >
                         <span>{topic}</span>
                         <Badge variant="outline" className={cn(
