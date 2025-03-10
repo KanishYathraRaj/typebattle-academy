@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTest } from '../context/TestContext';
 import { calculateWPM, calculateAccuracy } from '../utils/typeTestUtils';
@@ -12,11 +13,13 @@ interface UseTypingTestReturn {
   accuracy: number;
   errorCount: number;
   isComplete: boolean;
-  selectedAlgorithm: string;
+  selectedCategory: string;
+  selectedTopic: string;
   selectedLanguage: string;
   handleKeyDown: (e: KeyboardEvent) => void;
   handleReset: () => void;
-  handleChangeAlgorithm: (algorithm: string) => void;
+  handleChangeCategory: (category: string) => void;
+  handleChangeTopic: (topic: string) => void;
   handleChangeLanguage: (language: string) => void;
   testContainerRef: React.RefObject<HTMLDivElement>;
 }
@@ -40,7 +43,8 @@ export const useTypingTest = (): UseTypingTestReturn => {
   const [accuracy, setAccuracy] = useState(100);
   const [errorCount, setErrorCount] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
-  const [selectedAlgorithm, setSelectedAlgorithm] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedTopic, setSelectedTopic] = useState('All');
   const [selectedLanguage, setSelectedLanguage] = useState('All');
   
   const testContainerRef = useRef<HTMLDivElement>(null);
@@ -88,8 +92,10 @@ export const useTypingTest = (): UseTypingTestReturn => {
       time: finalElapsed,
       errors: errorCount,
       snippetId: currentSnippet.id,
-      algorithm: currentSnippet.algorithm,
+      category: currentSnippet.category,
+      topic: currentSnippet.topic,
       language: currentSnippet.language,
+      difficulty: currentSnippet.difficulty,
       date: new Date()
     });
     
@@ -218,19 +224,30 @@ export const useTypingTest = (): UseTypingTestReturn => {
     resetTest();
   };
 
-  const handleChangeAlgorithm = (algorithm: string) => {
-    setSelectedAlgorithm(algorithm);
-    const actualAlgorithm = algorithm === 'All' ? undefined : algorithm;
+  const handleChangeCategory = (category: string) => {
+    setSelectedCategory(category);
+    const actualCategory = category === 'All' ? undefined : category;
+    const actualTopic = selectedTopic === 'All' ? undefined : selectedTopic;
     const actualLanguage = selectedLanguage === 'All' ? undefined : selectedLanguage;
-    changeSnippet(actualAlgorithm, actualLanguage);
+    changeSnippet(actualCategory, actualTopic, actualLanguage);
+    handleReset();
+  };
+  
+  const handleChangeTopic = (topic: string) => {
+    setSelectedTopic(topic);
+    const actualCategory = selectedCategory === 'All' ? undefined : selectedCategory;
+    const actualTopic = topic === 'All' ? undefined : topic;
+    const actualLanguage = selectedLanguage === 'All' ? undefined : selectedLanguage;
+    changeSnippet(actualCategory, actualTopic, actualLanguage);
     handleReset();
   };
   
   const handleChangeLanguage = (language: string) => {
     setSelectedLanguage(language);
-    const actualAlgorithm = selectedAlgorithm === 'All' ? undefined : selectedAlgorithm;
+    const actualCategory = selectedCategory === 'All' ? undefined : selectedCategory;
+    const actualTopic = selectedTopic === 'All' ? undefined : selectedTopic;
     const actualLanguage = language === 'All' ? undefined : language;
-    changeSnippet(actualAlgorithm, actualLanguage);
+    changeSnippet(actualCategory, actualTopic, actualLanguage);
     handleReset();
   };
 
@@ -250,11 +267,13 @@ export const useTypingTest = (): UseTypingTestReturn => {
     accuracy,
     errorCount,
     isComplete,
-    selectedAlgorithm,
+    selectedCategory,
+    selectedTopic,
     selectedLanguage,
     handleKeyDown,
     handleReset,
-    handleChangeAlgorithm,
+    handleChangeCategory,
+    handleChangeTopic,
     handleChangeLanguage,
     testContainerRef
   };

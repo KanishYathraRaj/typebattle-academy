@@ -18,7 +18,7 @@ const TestComplete: React.FC<TestCompleteProps> = ({ results, onRetry }) => {
   const letterGrade = getLetterGrade(results.wpm, results.accuracy);
   
   const handleShare = () => {
-    const shareText = `I just typed ${results.algorithm} in ${results.language} at ${results.wpm} WPM with ${results.accuracy}% accuracy on DSAType! My grade: ${letterGrade}`;
+    const shareText = `I just typed ${results.topic} in ${results.language} at ${results.wpm} WPM with ${results.accuracy}% accuracy on DSAType! My grade: ${letterGrade}`;
     
     if (navigator.share) {
       navigator.share({
@@ -73,7 +73,7 @@ const TestComplete: React.FC<TestCompleteProps> = ({ results, onRetry }) => {
           </div>
           
           <div className="text-center mb-6">
-            <p className="text-lg font-medium">{results.algorithm}</p>
+            <p className="text-lg font-medium">{results.topic}</p>
             <p className="text-sm text-muted-foreground mb-4">{results.language}</p>
             <p className="text-sm">
               Completed on {results.date.toLocaleDateString()} at {results.date.toLocaleTimeString()}

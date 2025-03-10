@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -42,7 +41,6 @@ const Results: React.FC = () => {
       setHasResults(savedResults.length > 0);
       
       if (savedResults.length > 0) {
-        // Calculate stats
         const totalWpm = savedResults.reduce((sum, r) => sum + r.wpm, 0);
         const totalAccuracy = savedResults.reduce((sum, r) => sum + r.accuracy, 0);
         const totalTestTime = savedResults.reduce((sum, r) => sum + r.time, 0);
@@ -72,7 +70,6 @@ const Results: React.FC = () => {
     }
   };
   
-  // Prepare chart data
   const wpmChartData = results.map((result, index) => ({
     id: index,
     date: new Date(result.date).toLocaleDateString(),
@@ -80,21 +77,19 @@ const Results: React.FC = () => {
     accuracy: result.accuracy,
   })).reverse();
   
-  // Algorithm distribution
-  const algorithmData = results.reduce((acc, result) => {
-    const algorithm = result.algorithm;
-    const existingEntry = acc.find(entry => entry.name === algorithm);
+  const topicData = results.reduce((acc, result) => {
+    const topic = result.topic;
+    const existingEntry = acc.find(entry => entry.name === topic);
     
     if (existingEntry) {
       existingEntry.value++;
     } else {
-      acc.push({ name: algorithm, value: 1 });
+      acc.push({ name: topic, value: 1 });
     }
     
     return acc;
   }, [] as { name: string; value: number }[]);
   
-  // Language distribution
   const languageData = results.reduce((acc, result) => {
     const language = result.language;
     const existingEntry = acc.find(entry => entry.name === language);
@@ -217,13 +212,13 @@ const Results: React.FC = () => {
                 
                 <Card className="glass">
                   <CardHeader>
-                    <CardTitle>Algorithms Practiced</CardTitle>
+                    <CardTitle>Topics Practiced</CardTitle>
                   </CardHeader>
                   <CardContent className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
-                          data={algorithmData}
+                          data={topicData}
                           cx="50%"
                           cy="50%"
                           labelLine={false}
@@ -232,7 +227,7 @@ const Results: React.FC = () => {
                           dataKey="value"
                           label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                         >
-                          {algorithmData.map((entry, index) => (
+                          {topicData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                           ))}
                         </Pie>
@@ -284,7 +279,7 @@ const Results: React.FC = () => {
                     <CardContent className="p-6">
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div>
-                          <h3 className="font-bold text-lg">{result.algorithm}</h3>
+                          <h3 className="font-bold text-lg">{result.topic}</h3>
                           <p className="text-sm text-muted-foreground">{result.language}</p>
                           <p className="text-xs mt-1">
                             {new Date(result.date).toLocaleDateString()} at {new Date(result.date).toLocaleTimeString()}

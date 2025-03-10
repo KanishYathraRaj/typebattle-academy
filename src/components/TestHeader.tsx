@@ -7,7 +7,7 @@ const TestHeader: React.FC = () => {
 
   return (
     <div className="mb-6">
-      <h2 className="text-2xl font-bold mb-2">{currentSnippet.algorithm}</h2>
+      <h2 className="text-2xl font-bold mb-2">{currentSnippet.topic}</h2>
       <div className="flex items-center gap-2 mb-4">
         <span className="px-2 py-1 text-xs font-medium bg-primary/10 rounded-full">
           {currentSnippet.language}
