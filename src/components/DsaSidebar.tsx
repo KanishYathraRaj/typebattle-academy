@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { getCategories, getTopics, getLanguages, getCategoryDescription } from '../utils/codeSnippets';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
@@ -51,7 +50,7 @@ const DsaSidebar: React.FC = () => {
   };
   
   const handleChangeTopic = (topic: string) => {
-    console.log("DsaSidebar - Changing topic to:", topic);
+    console.log("DsaSidebar - Changing topic to:", topic, "in category:", selectedCategory);
     setSelectedTopic(topic);
     changeSnippet(selectedCategory, topic, selectedLanguage);
   };
@@ -135,7 +134,12 @@ const DsaSidebar: React.FC = () => {
                             ? "bg-primary/10 text-primary font-medium" 
                             : "text-foreground hover:bg-accent"
                         )}
-                        onClick={() => handleChangeTopic(topic)}
+                        onClick={() => {
+                          if (selectedCategory !== category) {
+                            setSelectedCategory(category);
+                          }
+                          handleChangeTopic(topic);
+                        }}
                       >
                         <span>{topic}</span>
                         {isActive && (
