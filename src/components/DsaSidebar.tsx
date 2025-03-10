@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { getCategories, getTopics, getLanguages, getCategoryDescription } from '../utils/codeSnippets';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { useTest } from '../context/TestContext';
-import { useTypingTest } from '../hooks/useTypingTest';
 import { Code, BookOpen, Layers, ChevronDown, Star } from 'lucide-react';
 import { Separator } from './ui/separator';
 import { cn } from '@/lib/utils';
@@ -11,18 +10,13 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collap
 import { Badge } from './ui/badge';
 
 const DsaSidebar: React.FC = () => {
-  const { currentSnippet } = useTest();
-  const { 
-    handleChangeCategory, 
-    handleChangeTopic, 
-    handleChangeLanguage,
-    selectedCategory,
-    selectedTopic,
-    selectedLanguage 
-  } = useTypingTest();
+  const { currentSnippet, changeSnippet } = useTest();
   
-  // Only local UI states, no duplicated state management
+  // Local UI state
   const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({});
+  const [selectedCategory, setSelectedCategory] = useState<string>(currentSnippet.category);
+  const [selectedTopic, setSelectedTopic] = useState<string>(currentSnippet.topic);
+  const [selectedLanguage, setSelectedLanguage] = useState<string>(currentSnippet.language);
   
   const categories = getCategories();
   const languages = getLanguages();
@@ -36,11 +30,36 @@ const DsaSidebar: React.FC = () => {
     setOpenCategories(initialOpenCategories);
   }, [categories, selectedCategory]);
   
+  // Sync local state with context when snippet changes
+  useEffect(() => {
+    setSelectedCategory(currentSnippet.category);
+    setSelectedTopic(currentSnippet.topic);
+    setSelectedLanguage(currentSnippet.language);
+  }, [currentSnippet]);
+  
   const toggleCategory = (category: string) => {
     setOpenCategories(prev => ({
       ...prev,
       [category]: !prev[category]
     }));
+  };
+  
+  const handleChangeCategory = (category: string) => {
+    console.log("DsaSidebar - Changing category to:", category);
+    setSelectedCategory(category);
+    changeSnippet(category, undefined, selectedLanguage);
+  };
+  
+  const handleChangeTopic = (topic: string) => {
+    console.log("DsaSidebar - Changing topic to:", topic);
+    setSelectedTopic(topic);
+    changeSnippet(selectedCategory, topic, selectedLanguage);
+  };
+  
+  const handleChangeLanguage = (language: string) => {
+    console.log("DsaSidebar - Changing language to:", language);
+    setSelectedLanguage(language);
+    changeSnippet(selectedCategory, selectedTopic, language);
   };
   
   const getDifficultyColor = (difficulty?: string) => {
@@ -119,12 +138,14 @@ const DsaSidebar: React.FC = () => {
                         onClick={() => handleChangeTopic(topic)}
                       >
                         <span>{topic}</span>
-                        <Badge variant="outline" className={cn(
-                          "text-xs",
-                          getDifficultyColor(currentSnippet.difficulty)
-                        )}>
-                          {currentSnippet.difficulty}
-                        </Badge>
+                        {isActive && (
+                          <Badge variant="outline" className={cn(
+                            "text-xs",
+                            getDifficultyColor(currentSnippet.difficulty)
+                          )}>
+                            {currentSnippet.difficulty}
+                          </Badge>
+                        )}
                       </button>
                     );
                   })}

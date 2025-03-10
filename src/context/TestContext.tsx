@@ -47,9 +47,6 @@ export const TestProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   // Use a permanent cache to ensure consistency across sessions
   const snippetCache = useRef<Record<string, any>>({});
-  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
-  const [selectedTopic, setSelectedTopic] = useState<string | undefined>(undefined);
-  const [selectedLanguage, setSelectedLanguage] = useState<string | undefined>(undefined);
 
   const startTest = () => {
     setIsTestActive(true);
@@ -64,27 +61,25 @@ export const TestProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const resetTest = () => {
     setIsTestActive(false);
     setResults(null);
-    // When resetting, keep the same category, topic and language selection
-    changeSnippet(selectedCategory, selectedTopic, selectedLanguage);
   };
 
   const changeSnippet = (category?: string, topic?: string, language?: string) => {
-    // Update the selected category, topic and language
-    setSelectedCategory(category);
-    setSelectedTopic(topic);
-    setSelectedLanguage(language);
+    console.log("TestContext - changeSnippet called with:", { category, topic, language });
     
     // Create a cache key based on the category, topic and language
     const cacheKey = `${category || 'all'}-${topic || 'all'}-${language || 'all'}`;
     
     // Check if we already have a snippet for this combination
     if (snippetCache.current[cacheKey]) {
+      console.log("TestContext - Using cached snippet for:", cacheKey);
       setCurrentSnippet(snippetCache.current[cacheKey]);
     } else {
       // If all three params are specified, try to get the exact match first
       if (category && topic && language) {
+        console.log("TestContext - Trying to get exact match for:", { category, topic, language });
         const exactMatch = getCodeSnippet(category, topic, language);
         if (exactMatch) {
+          console.log("TestContext - Found exact match");
           snippetCache.current[cacheKey] = exactMatch;
           setCurrentSnippet(exactMatch);
           return;
@@ -92,13 +87,14 @@ export const TestProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       
       // Otherwise get a random matching snippet
+      console.log("TestContext - Getting random snippet for:", { category, topic, language });
       const newSnippet = getRandomCodeSnippet(category, topic, language);
       snippetCache.current[cacheKey] = newSnippet;
       setCurrentSnippet(newSnippet);
     }
   };
 
-  // Initialize the cache with one snippet for each category-topic-language combination
+  // Pre-cache snippets for popular combinations
   useEffect(() => {
     const categories = getCategories();
     const languages = getLanguages();

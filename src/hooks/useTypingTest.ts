@@ -13,15 +13,9 @@ interface UseTypingTestReturn {
   accuracy: number;
   errorCount: number;
   isComplete: boolean;
-  selectedCategory: string;
-  selectedTopic: string;
-  selectedLanguage: string;
+  testContainerRef: React.RefObject<HTMLDivElement>;
   handleKeyDown: (e: KeyboardEvent) => void;
   handleReset: () => void;
-  handleChangeCategory: (category: string) => void;
-  handleChangeTopic: (topic: string) => void;
-  handleChangeLanguage: (language: string) => void;
-  testContainerRef: React.RefObject<HTMLDivElement>;
 }
 
 export const useTypingTest = (): UseTypingTestReturn => {
@@ -31,8 +25,7 @@ export const useTypingTest = (): UseTypingTestReturn => {
     isTestActive, 
     startTest, 
     endTest, 
-    resetTest, 
-    changeSnippet 
+    resetTest
   } = useTest();
   
   const [typedChars, setTypedChars] = useState<string[]>([]);
@@ -44,21 +37,8 @@ export const useTypingTest = (): UseTypingTestReturn => {
   const [errorCount, setErrorCount] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   
-  // Important: These state variables must be defined after the other state variables
-  // to maintain consistent hook order across renders
-  const [selectedCategory, setSelectedCategory] = useState(currentSnippet.category);
-  const [selectedTopic, setSelectedTopic] = useState(currentSnippet.topic);
-  const [selectedLanguage, setSelectedLanguage] = useState(currentSnippet.language);
-  
   const testContainerRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<number | null>(null);
-
-  // Update local state when snippet changes (must maintain hook order)
-  useEffect(() => {
-    setSelectedCategory(currentSnippet.category);
-    setSelectedTopic(currentSnippet.topic);
-    setSelectedLanguage(currentSnippet.language);
-  }, [currentSnippet]);
 
   useEffect(() => {
     if (isTestActive && startTime) {
@@ -234,35 +214,17 @@ export const useTypingTest = (): UseTypingTestReturn => {
     resetTest();
   };
 
-  const handleChangeCategory = (category: string) => {
-    console.log("Changing category to:", category);
-    setSelectedCategory(category);
-    const actualCategory = category === 'All' ? undefined : category;
-    const actualTopic = selectedTopic === 'All' ? undefined : selectedTopic;
-    const actualLanguage = selectedLanguage === 'All' ? undefined : selectedLanguage;
-    changeSnippet(actualCategory, actualTopic, actualLanguage);
-    handleReset();
-  };
-  
-  const handleChangeTopic = (topic: string) => {
-    console.log("Changing topic to:", topic);
-    setSelectedTopic(topic);
-    const actualCategory = selectedCategory === 'All' ? undefined : selectedCategory;
-    const actualTopic = topic === 'All' ? undefined : topic;
-    const actualLanguage = selectedLanguage === 'All' ? undefined : selectedLanguage;
-    changeSnippet(actualCategory, actualTopic, actualLanguage);
-    handleReset();
-  };
-  
-  const handleChangeLanguage = (language: string) => {
-    console.log("Changing language to:", language);
-    setSelectedLanguage(language);
-    const actualCategory = selectedCategory === 'All' ? undefined : selectedCategory;
-    const actualTopic = selectedTopic === 'All' ? undefined : selectedTopic;
-    const actualLanguage = language === 'All' ? undefined : language;
-    changeSnippet(actualCategory, actualTopic, actualLanguage);
-    handleReset();
-  };
+  // Reset typed chars when code snippet changes
+  useEffect(() => {
+    setTypedChars([]);
+    setCurrentPos(0);
+    setStartTime(null);
+    setCurrentTime(0);
+    setWpm(0);
+    setAccuracy(100);
+    setErrorCount(0);
+    setIsComplete(false);
+  }, [currentSnippet.id]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
@@ -280,14 +242,8 @@ export const useTypingTest = (): UseTypingTestReturn => {
     accuracy,
     errorCount,
     isComplete,
-    selectedCategory,
-    selectedTopic,
-    selectedLanguage,
     handleKeyDown,
     handleReset,
-    handleChangeCategory,
-    handleChangeTopic,
-    handleChangeLanguage,
     testContainerRef
   };
 };
