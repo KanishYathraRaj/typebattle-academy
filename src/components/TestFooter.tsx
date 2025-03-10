@@ -7,9 +7,9 @@ import TestOptions from './TestOptions';
 interface TestFooterProps {
   isComplete: boolean;
   isTestActive: boolean;
-  selectedAlgorithm: string;
+  selectedCategory: string;
   selectedLanguage: string;
-  onAlgorithmChange: (algorithm: string) => void;
+  onCategoryChange: (category: string) => void;
   onLanguageChange: (language: string) => void;
   onReset: () => void;
 }
@@ -17,9 +17,9 @@ interface TestFooterProps {
 const TestFooter: React.FC<TestFooterProps> = ({
   isComplete,
   isTestActive,
-  selectedAlgorithm,
+  selectedCategory,
   selectedLanguage,
-  onAlgorithmChange,
+  onCategoryChange,
   onLanguageChange,
   onReset
 }) => {
@@ -30,9 +30,9 @@ const TestFooter: React.FC<TestFooterProps> = ({
   return (
     <div className="mt-6 flex justify-between items-center">
       <TestOptions 
-        selectedAlgorithm={selectedAlgorithm}
+        selectedCategory={selectedCategory}
         selectedLanguage={selectedLanguage}
-        onAlgorithmChange={onAlgorithmChange}
+        onCategoryChange={onCategoryChange}
         onLanguageChange={onLanguageChange}
         onReset={onReset}
       />
