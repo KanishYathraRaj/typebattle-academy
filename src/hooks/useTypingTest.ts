@@ -50,6 +50,13 @@ export const useTypingTest = (): UseTypingTestReturn => {
   const testContainerRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<number | null>(null);
 
+  // Update local state when currentSnippet changes
+  useEffect(() => {
+    setSelectedCategory(currentSnippet.category);
+    setSelectedTopic(currentSnippet.topic);
+    setSelectedLanguage(currentSnippet.language);
+  }, [currentSnippet]);
+
   useEffect(() => {
     if (isTestActive && startTime) {
       timerRef.current = window.setInterval(() => {
