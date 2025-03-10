@@ -1,5 +1,11 @@
 import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
-import { getCodeSnippet, getRandomCodeSnippet, getAlgorithms, getLanguages } from '../utils/codeSnippets';
+import { 
+  getCodeSnippet, 
+  getRandomCodeSnippet, 
+  getCategories, 
+  getTopics,
+  getLanguages 
+} from '../utils/codeSnippets';
 
 export type TestResults = {
   wpm: number;
@@ -7,25 +13,29 @@ export type TestResults = {
   time: number;
   errors: number;
   snippetId: string;
-  algorithm: string;
+  category: string;
+  topic: string;
   language: string;
+  difficulty: string;
   date: Date;
 };
 
 type TestContextType = {
   currentSnippet: {
     id: string;
-    algorithm: string;
+    category: string;
+    topic: string;
     language: string;
     code: string;
     description: string;
+    difficulty: string;
   };
   isTestActive: boolean;
   results: TestResults | null;
   startTest: () => void;
   endTest: (results: TestResults) => void;
   resetTest: () => void;
-  changeSnippet: (algorithm?: string, language?: string) => void;
+  changeSnippet: (category?: string, topic?: string, language?: string) => void;
 };
 
 const TestContext = createContext<TestContextType | undefined>(undefined);
@@ -37,7 +47,8 @@ export const TestProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   // Use a permanent cache to ensure consistency across sessions
   const snippetCache = useRef<Record<string, any>>({});
-  const [selectedAlgorithm, setSelectedAlgorithm] = useState<string | undefined>(undefined);
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
+  const [selectedTopic, setSelectedTopic] = useState<string | undefined>(undefined);
   const [selectedLanguage, setSelectedLanguage] = useState<string | undefined>(undefined);
 
   const startTest = () => {
@@ -53,25 +64,26 @@ export const TestProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const resetTest = () => {
     setIsTestActive(false);
     setResults(null);
-    // When resetting, keep the same algorithm and language selection
-    changeSnippet(selectedAlgorithm, selectedLanguage);
+    // When resetting, keep the same category, topic and language selection
+    changeSnippet(selectedCategory, selectedTopic, selectedLanguage);
   };
 
-  const changeSnippet = (algorithm?: string, language?: string) => {
-    // Update the selected algorithm and language
-    setSelectedAlgorithm(algorithm);
+  const changeSnippet = (category?: string, topic?: string, language?: string) => {
+    // Update the selected category, topic and language
+    setSelectedCategory(category);
+    setSelectedTopic(topic);
     setSelectedLanguage(language);
     
-    // Create a cache key based on the algorithm and language
-    const cacheKey = `${algorithm || 'all'}-${language || 'all'}`;
+    // Create a cache key based on the category, topic and language
+    const cacheKey = `${category || 'all'}-${topic || 'all'}-${language || 'all'}`;
     
     // Check if we already have a snippet for this combination
     if (snippetCache.current[cacheKey]) {
       setCurrentSnippet(snippetCache.current[cacheKey]);
     } else {
-      // If both algorithm and language are specified, try to get the exact match first
-      if (algorithm && language) {
-        const exactMatch = getCodeSnippet(algorithm, language);
+      // If all three params are specified, try to get the exact match first
+      if (category && topic && language) {
+        const exactMatch = getCodeSnippet(category, topic, language);
         if (exactMatch) {
           snippetCache.current[cacheKey] = exactMatch;
           setCurrentSnippet(exactMatch);
@@ -80,49 +92,33 @@ export const TestProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       
       // Otherwise get a random matching snippet
-      const newSnippet = getRandomCodeSnippet(algorithm, language);
+      const newSnippet = getRandomCodeSnippet(category, topic, language);
       snippetCache.current[cacheKey] = newSnippet;
       setCurrentSnippet(newSnippet);
     }
   };
 
-  // Initialize the cache with one snippet for each algorithm-language combination
+  // Initialize the cache with one snippet for each category-topic-language combination
   useEffect(() => {
-    const algorithms = getAlgorithms();
+    const categories = getCategories();
     const languages = getLanguages();
     
-    // Pre-cache one snippet for each combination to ensure consistency
-    algorithms.forEach(algo => {
-      languages.forEach(lang => {
-        // Try to get exact match for this algorithm-language pair
-        const exactMatch = getCodeSnippet(algo, lang);
-        const cacheKey = `${algo}-${lang}`;
-        
-        if (exactMatch) {
-          snippetCache.current[cacheKey] = exactMatch;
-        }
+    // Pre-cache snippets for each available combination
+    categories.forEach(category => {
+      const topics = getTopics(category);
+      
+      topics.forEach(topic => {
+        languages.forEach(language => {
+          // Try to get exact match for this category-topic-language triplet
+          const exactMatch = getCodeSnippet(category, topic, language);
+          const cacheKey = `${category}-${topic}-${language}`;
+          
+          if (exactMatch) {
+            snippetCache.current[cacheKey] = exactMatch;
+          }
+        });
       });
     });
-    
-    // Also cache the "all" combinations
-    languages.forEach(lang => {
-      const cacheKey = `all-${lang}`;
-      if (!snippetCache.current[cacheKey]) {
-        snippetCache.current[cacheKey] = getRandomCodeSnippet(undefined, lang);
-      }
-    });
-    
-    algorithms.forEach(algo => {
-      const cacheKey = `${algo}-all`;
-      if (!snippetCache.current[cacheKey]) {
-        snippetCache.current[cacheKey] = getRandomCodeSnippet(algo, undefined);
-      }
-    });
-    
-    // And the "all-all" case
-    if (!snippetCache.current['all-all']) {
-      snippetCache.current['all-all'] = getRandomCodeSnippet();
-    }
   }, []);
 
   return (
