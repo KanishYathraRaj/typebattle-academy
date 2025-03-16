@@ -2,16 +2,13 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import TypeTest from '../components/TypeTest';
-import TestComplete from '../components/TestComplete';
-import { useTest } from '../context/TestContext';
 import DsaSidebar from '../components/DsaSidebar';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import StatsHeader from '../components/StatsHeader';
+import TestContent from '../components/TestContent';
 
 const Test: React.FC = () => {
-  const { results, resetTest } = useTest();
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const toggleSidebar = () => {
@@ -47,13 +44,8 @@ const Test: React.FC = () => {
           {/* Stats Header */}
           <StatsHeader />
           
-          <div className="container max-w-4xl mx-auto px-4 py-8">
-            {results ? (
-              <TestComplete results={results} onRetry={resetTest} />
-            ) : (
-              <TypeTest />
-            )}
-          </div>
+          {/* Test Content */}
+          <TestContent />
         </main>
       </div>
       

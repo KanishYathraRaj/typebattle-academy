@@ -5,7 +5,8 @@ import {
   getRandomCodeSnippet, 
   getCategories, 
   getTopics,
-  getLanguages 
+  getLanguages,
+  CodeSnippet 
 } from '../utils/codeSnippets';
 
 export type TestResults = {
@@ -22,15 +23,7 @@ export type TestResults = {
 };
 
 type TestContextType = {
-  currentSnippet: {
-    id: string;
-    category: string;
-    topic: string;
-    language: string;
-    code: string;
-    description: string;
-    difficulty: string;
-  };
+  currentSnippet: CodeSnippet;
   isTestActive: boolean;
   results: TestResults | null;
   startTest: () => void;
@@ -61,7 +54,6 @@ export const TestProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setResults(null);
   };
 
-  // Simplified changeSnippet function that focuses on finding the right snippet
   const changeSnippet = (category?: string, topic?: string, language?: string) => {
     console.log("TestContext - changeSnippet called with:", { category, topic, language });
     
