@@ -22,7 +22,7 @@ const Test: React.FC = () => {
       <div className="flex flex-1 pt-16 relative">
         {/* Left Sidebar */}
         <div 
-          className={`fixed top-0 left-0 h-full bg-background border-r border-border z-40 pt-16 transition-all duration-300 ${
+          className={`fixed top-0 left-0 h-full bg-background border-r border-border/50 z-40 pt-16 transition-all duration-300 ${
             sidebarOpen ? 'w-72 translate-x-0' : 'w-72 -translate-x-full'
           }`}
         >
@@ -31,21 +31,23 @@ const Test: React.FC = () => {
         
         {/* Toggle Sidebar Button */}
         <Button 
-          variant="outline" 
+          variant="secondary" 
           size="icon" 
-          className="fixed top-28 left-0 z-50 rounded-r-md rounded-l-none border-l-0 shadow-md"
+          className="fixed top-20 left-0 z-50 rounded-r-md rounded-l-none border border-border/50 border-l-0 shadow-md"
           onClick={toggleSidebar}
         >
           {sidebarOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </Button>
         
         {/* Main Content */}
-        <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-72' : 'ml-0'}`}>
+        <main className={`flex-1 transition-all duration-300 pb-20 ${sidebarOpen ? 'ml-72' : 'ml-0'}`}>
           {/* Stats Header */}
           <StatsHeader />
           
           {/* Test Content */}
-          <TestContent />
+          <div className="container mx-auto px-6 py-8">
+            <TestContent />
+          </div>
         </main>
       </div>
       

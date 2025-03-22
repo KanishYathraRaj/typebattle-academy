@@ -53,7 +53,7 @@ const CodeSnippet: React.FC<CodeSnippetProps> = ({ code, currentPosition, typedC
           return (
             <div 
               key={lineIndex}
-              className={`whitespace-pre ${isCurrentLine ? 'bg-primary/5' : ''}`}
+              className={`whitespace-pre ${isCurrentLine ? 'bg-primary/5 rounded-sm' : ''}`}
             >
               {line.split('').map((char, charIndex) => {
                 const absoluteIndex = lineIndex === 0 
@@ -86,9 +86,6 @@ const CodeSnippet: React.FC<CodeSnippetProps> = ({ code, currentPosition, typedC
                     data-char={char}
                     ref={ref}
                   >
-                    {absoluteIndex === currentPosition && (
-                      <span className="absolute h-[1.2em] w-0.5 bg-primary animate-caret-blink -ml-[1px]"></span>
-                    )}
                     {char === ' ' ? '\u00A0' : char}
                   </span>
                 );
